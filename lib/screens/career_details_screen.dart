@@ -89,7 +89,7 @@ class CareerDetailsScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                SkillAssessmentScreen(career: title),
+                                SkillAssessmentScreen(career: title,icon:icon),
                           ),
                         ),
                       },

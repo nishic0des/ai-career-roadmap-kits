@@ -5,7 +5,12 @@ import 'package:kits/screens/roadmap_screen.dart';
 
 class SkillAssessmentScreen extends StatefulWidget {
   final String career;
-  const SkillAssessmentScreen({super.key, required this.career});
+  final IconData icon;
+  const SkillAssessmentScreen({
+    super.key,
+    required this.career,
+    required this.icon,
+  });
 
   @override
   State<SkillAssessmentScreen> createState() => _SkillAssessmentScreenState();
@@ -237,7 +242,11 @@ class _SkillAssessmentScreenState extends State<SkillAssessmentScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => RoadmapScreen(roadmap: roadmap),
+                          builder: (context) => RoadmapScreen(
+                            roadmap: roadmap,
+                            career: widget.career,
+                            icon: widget.icon,
+                          ),
                         ),
                       );
                     } catch (e) {

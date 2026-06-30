@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class OpenAIService {
-  // add groq api key
-  static const String _apiKey = '';
+  static const String _apiKey =
+      '';
   Future<String> generateRoadmap({
     required String name,
     required String career,
