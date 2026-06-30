@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kits/services/openai_service.dart';
+import 'package:kits/screens/roadmap_screen.dart';
 
 class SkillAssessmentScreen extends StatefulWidget {
   final String career;
@@ -11,6 +13,7 @@ class SkillAssessmentScreen extends StatefulWidget {
 
 class _SkillAssessmentScreenState extends State<SkillAssessmentScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -78,6 +81,9 @@ class _SkillAssessmentScreenState extends State<SkillAssessmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -204,9 +210,48 @@ class _SkillAssessmentScreenState extends State<SkillAssessmentScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      print("Form is valid");
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) {
+                      return;
+                    }
+                    final selectedSkills = selectedTechnologies.entries
+                        .where((entry) => entry.value)
+                        .map((entry) => entry.key)
+                        .toList();
+                    setState(() {
+                      isLoading = true;
+                    });
+                    try {
+                      final service = OpenAIService();
+                      final roadmap = await service.generateRoadmap(
+                        name: nameController.text,
+                        career: widget.career,
+                        level: programmingLevel,
+                        skills: selectedSkills,
+                        studyHours: studyHours,
+                        learningMode: learningMode,
+                      );
+
+                      if (!mounted) return;
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RoadmapScreen(roadmap: roadmap),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Error generating roadmap. Please try again later.",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    } finally {
+                      isLoading = false;
                     }
                   },
                   child: Text("Submit"),
